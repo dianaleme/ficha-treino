@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Ficha de Treino — Método Lucas Gonda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --black:#0f0f0f;
+  --dark:#181818;
+  --surface:#1e1e1e;
+  --surface2:#252525;
+  --border:#2d2d2d;
+  --gray:#777;
+  --muted:#555;
+  --light:#bbb;
+  --white:#efefef;
+  --green:#39d353;
+  --green-dim:#1c6b2e;
+  --green-bg:rgba(57,211,83,0.08);
+  --red:#e05252;
+  --yellow:#f0c040;
+  --font:'DM Sans',system-ui,sans-serif;
+}
+
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:var(--font);background:var(--black);color:var(--white);min-height:100dvh;-webkit-font-smoothing:antialiased}
+
+.shell{max-width:520px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column}
+
+/* HEADER */
+.header{
+  padding:14px 16px 12px;
+  background:var(--black);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:20;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.brand{font-size:10px;letter-spacing:.12em;color:var(--green);text-transform:uppercase;font-weight:500;display:block;margin-bottom:2px}
+.header h1{font-size:18px;font-weight:600;letter-spacing:-.02em;color:var(--white)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2.5s ease-in-out infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* META */
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-bottom:1px solid var(--border)}
+.meta-cell{background:var(--dark);padding:10px 16px}
+.meta-cell label{display:block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin-bottom:4px}
+.meta-cell input{width:100%;background:none;border:none;color:var(--white);font-size:15px;font-family:var(--font);font-weight:500;outline:none;-webkit-appearance:none}
+.meta-cell input::placeholder{color:var(--muted)}
+.meta-cell input[type=date]{color-scheme:dark}
+
+/* TABS */
+.tabs{display:flex;background:var(--dark);border-bottom:1px solid var(--border);position:sticky;top:65px;z-index:19}
+.tab{flex:1;padding:12px 4px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-family:var(--font);font-weight:500;color:var(--gray);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:color .15s,border-color .15s}
+.tab.on{color:var(--green);border-bottom-color:var(--green)}
+
+.pane{display:none}
+.pane.on{display:block}
+
+/* SECTION */
+.sec{padding:16px;border-bottom:1px solid var(--border)}
+.sec-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin-bottom:14px}
+
+/* CALLOUT */
+.callout{border-radius:10px;padding:14px;margin-bottom:12px;display:flex;gap:12px;align-items:flex-start}
+.callout.green{background:var(--green-bg);border:1px solid var(--green-dim)}
+.callout.gray{background:var(--surface);border:1px solid var(--border)}
+.callout.yellow{background:rgba(240,192,64,.07);border:1px solid rgba(240,192,64,.2)}
+.callout-icon{font-size:18px;flex-shrink:0;line-height:1.3}
+.callout-title{font-size:14px;font-weight:600;color:var(--white);margin-bottom:5px}
+.callout-text{font-size:13px;color:var(--light);line-height:1.55}
+.callout-text strong{color:var(--green);font-weight:500}
+
+/* WARMUP TOGGLE */
+.wu-toggle{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;cursor:pointer;margin-bottom:12px}
+.wu-toggle-label{font-size:14px;color:var(--light);display:flex;align-items:center;gap:10px}
+.wu-badge{font-size:11px;color:var(--gray);background:var(--surface2);border-radius:5px;padding:3px 8px}
+.wu-arrow{font-size:12px;color:var(--gray);transition:transform .2s}
+.wu-arrow.open{transform:rotate(180deg)}
+.wu-body{display:none;margin-bottom:12px}
+.wu-body.open{display:block}
+.wu-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:8px}
+.wu-header{padding:10px 14px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:11px;color:var(--gray);display:flex;justify-content:space-between}
+.wu-header strong{color:var(--yellow)}
+.wu-row{display:grid;grid-template-columns:28px 1fr 1fr 36px;align-items:center;border-bottom:1px solid var(--border)}
+.wu-row:last-child{border-bottom:none}
+.wu-num{font-size:12px;color:var(--muted);text-align:center;padding:10px 4px}
+.wu-row input{background:none;border:none;color:var(--gray);font-size:15px;font-family:var(--font);text-align:center;padding:10px 6px;outline:none;width:100%;-webkit-appearance:none}
+.wu-row input::placeholder{color:var(--muted)}
+.wu-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;text-align:center;padding:10px 6px;transition:color .15s}
+.wu-del:hover{color:var(--red)}
+.add-wu{background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;font-family:var(--font);padding:10px 14px;display:block;transition:color .15s}
+.add-wu:hover{color:var(--yellow)}
+
+/* EXERCISE CARD */
+.ex-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden}
+.ex-head{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--surface2);border-bottom:1px solid var(--border)}
+.ex-num{font-size:12px;color:var(--green);font-weight:600;min-width:22px}
+.ex-name-input{flex:1;background:none;border:none;color:var(--white);font-family:var(--font);font-size:15px;font-weight:500;outline:none;-webkit-appearance:none}
+.ex-name-input::placeholder{color:var(--muted)}
+.ex-rm{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1;padding:0 2px;transition:color .15s}
+.ex-rm:hover{color:var(--red)}
+
+/* exercise row - single line */
+.ex-row{display:grid;grid-template-columns:1fr 80px 80px 36px;align-items:center;border-bottom:1px solid var(--border);gap:0}
+.ex-row:last-child{border-bottom:none}
+.ex-row:nth-child(even){background:rgba(255,255,255,.015)}
+.ex-row-name{flex:1;background:none;border:none;color:var(--white);font-family:var(--font);font-size:15px;font-weight:500;outline:none;padding:14px 14px;width:100%;-webkit-appearance:none}
+.ex-row-name::placeholder{color:var(--muted)}
+.ex-row input[type=number]{background:none;border:none;border-left:1px solid var(--border);color:var(--white);font-family:var(--font);font-size:15px;font-weight:500;text-align:center;padding:14px 6px;outline:none;width:100%;-webkit-appearance:none;-moz-appearance:textfield}
+.ex-row input[type=number]::-webkit-outer-spin-button,.ex-row input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+.ex-row input[type=number]::placeholder{color:var(--muted)}
+.ex-row input[type=number]:focus{background:rgba(57,211,83,.05)}
+.ex-row .ant-inp{color:var(--gray) !important}
+.ex-row-rm{background:none;border:none;border-left:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:18px;padding:14px 10px;transition:color .15s;height:100%}
+.ex-row-rm:hover{color:var(--red)}
+
+.ex-list-head{display:grid;grid-template-columns:1fr 80px 80px 36px;border-bottom:1px solid var(--border);background:var(--surface2)}
+.ex-list-head span{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--gray);padding:7px 6px;text-align:center}
+.ex-list-head span:first-child{text-align:left;padding-left:14px;color:var(--muted)}
+.ex-list-head .ant-h{color:#555}
+
+.add-ex-row{width:100%;background:none;border:none;border-top:1px solid var(--border);color:var(--muted);font-family:var(--font);font-size:14px;padding:13px 14px;cursor:pointer;transition:color .15s;text-align:left}
+.add-ex-row:hover{color:var(--green)}
+
+.add-ex{width:100%;background:none;border:1.5px dashed var(--border);border-radius:10px;color:var(--muted);font-family:var(--font);font-size:14px;padding:14px;cursor:pointer;transition:border-color .15s,color .15s;margin-top:4px}
+.add-ex:hover{border-color:var(--green-dim);color:var(--green)}
+
+/* FEEL */
+.feel-row{display:flex;gap:6px;margin-bottom:16px}
+.feel-btn{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 2px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;font-family:var(--font)}
+.feel-btn .ico{font-size:22px;display:block;margin-bottom:3px}
+.feel-btn .lbl{font-size:11px;color:var(--gray);display:block}
+.feel-btn.on{border-color:var(--green);background:var(--green-bg)}
+.feel-btn.on .lbl{color:var(--green)}
+
+.field-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin-bottom:8px;margin-top:16px;display:block}
+.textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--white);font-family:var(--font);font-size:15px;padding:12px 14px;resize:none;outline:none;transition:border-color .15s;line-height:1.5;-webkit-appearance:none}
+.textarea:focus{border-color:var(--gray)}
+.textarea::placeholder{color:var(--muted)}
+.text-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--white);font-family:var(--font);font-size:15px;padding:12px 14px;outline:none;transition:border-color .15s;-webkit-appearance:none}
+.text-input:focus{border-color:var(--gray)}
+.text-input::placeholder{color:var(--muted)}
+
+/* SAVE BAR */
+.save-bar{padding:12px 16px;background:var(--dark);border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;position:sticky;bottom:0;z-index:19}
+.save-btn{flex:1;background:var(--green);color:var(--black);border:none;border-radius:10px;padding:14px;font-family:var(--font);font-size:15px;font-weight:600;cursor:pointer;transition:opacity .15s,transform .1s}
+.save-btn:hover{opacity:.88}
+.save-btn:active{transform:scale(.98)}
+.clear-btn{background:none;border:1px solid var(--border);border-radius:10px;color:var(--gray);font-family:var(--font);font-size:14px;padding:14px 16px;cursor:pointer;white-space:nowrap}
+.toast{font-size:13px;color:var(--green);opacity:0;transition:opacity .3s;white-space:nowrap}
+.toast.show{opacity:1}
+
+/* HISTORY */
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted);font-size:14px;line-height:1.7}
+.hist-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden}
+.hist-head{display:flex;justify-content:space-between;align-items:flex-start;padding:12px 14px;background:var(--surface2);border-bottom:1px solid var(--border)}
+.hist-title{font-size:15px;font-weight:500;color:var(--white)}
+.hist-meta{font-size:12px;color:var(--gray);margin-top:3px}
+.hist-body{padding:12px 14px}
+.hist-ex{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--border);gap:8px}
+.hist-ex:last-child{border-bottom:none}
+.hist-name{font-size:14px;color:var(--white)}
+.hist-sets{font-size:12px;color:var(--gray);text-align:right}
+.hist-note{font-size:13px;color:var(--gray);margin-top:10px;padding-top:10px;border-top:1px solid var(--border);line-height:1.5}
+.hist-goal{font-size:13px;color:var(--green-dim);margin-top:6px}
+.del-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;padding:0 2px;line-height:1;flex-shrink:0}
+.del-btn:hover{color:var(--red)}
+
+/* PROGRESS */
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 10px;text-align:center}
+.stat-val{font-size:28px;font-weight:600;color:var(--white)}
+.stat-lbl{font-size:11px;color:var(--gray);margin-top:4px;text-transform:uppercase;letter-spacing:.06em}
+.trend-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border);gap:8px}
+.trend-row:last-child{border-bottom:none}
+.trend-name{font-size:14px;color:var(--white)}
+.trend-val{font-size:14px;font-weight:500}
+.up{color:var(--green)}.same{color:var(--gray)}.dn{color:var(--red)}
+
+/* METHOD */
+.m-sec{padding:16px;border-bottom:1px solid var(--border)}
+.m-title{font-size:16px;font-weight:600;color:var(--white);margin-bottom:8px}
+.m-text{font-size:14px;color:var(--light);line-height:1.65;margin-top:8px}
+.m-check{margin-top:10px;display:flex;flex-direction:column;gap:7px}
+.m-check-item{font-size:14px;color:var(--light);display:flex;gap:10px;align-items:flex-start;line-height:1.4}
+.iy{color:var(--green);font-size:13px;margin-top:1px;flex-shrink:0}
+.in{color:var(--red);font-size:13px;margin-top:1px;flex-shrink:0}
+.m-ex{margin-top:12px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.m-ex-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);padding:9px 14px;border-bottom:1px solid var(--border)}
+.m-ex-row{font-size:14px;padding:10px 14px;display:flex;justify-content:space-between;border-bottom:1px solid var(--border);align-items:center}
+.m-ex-row:last-child{border-bottom:none}
+.tag{font-size:11px;padding:3px 9px;border-radius:5px;font-family:var(--font);flex-shrink:0}
+.tag-prep{background:rgba(240,192,64,.1);color:var(--yellow)}
+.tag-now{background:var(--green-bg);color:var(--green)}
+.tag-ant{background:rgba(136,136,136,.12);color:var(--gray)}
+.tag-no{background:rgba(224,82,82,.1);color:var(--red)}
+
+.footer{padding:16px;text-align:center;border-top:1px solid var(--border)}
+.footer a{font-size:12px;color:var(--gray);text-decoration:none}
+.footer a:hover{color:var(--green)}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header class="header">
+    <div>
+      <span class="brand">Método Lucas Gonda</span>
+      <h1>Ficha de Treino</h1>
+    </div>
+    <div class="dot"></div>
+  </header>
+
+  <div class="meta">
+    <div class="meta-cell"><label>Aluno(a)</label><input id="m-aluno" placeholder="Seu nome" autocomplete="off"/></div>
+    <div class="meta-cell"><label>Treino</label><input id="m-treino" placeholder="A / B / C..." maxlength="4"/></div>
+    <div class="meta-cell"><label>Data</label><input id="m-data" type="date"/></div>
+    <div class="meta-cell"><label>Semana</label><input id="m-semana" placeholder="Ex: 3" type="number" min="1"/></div>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab on" onclick="showTab('registro')">Registrar</button>
+    <button class="tab" onclick="showTab('historico')">Histórico</button>
+    <button class="tab" onclick="showTab('progresso')">Progresso</button>
+    <button class="tab" onclick="showTab('metodo')">Método</button>
+  </nav>
+
+  <!-- REGISTRAR -->
+  <div id="pane-registro" class="pane on">
+    <div class="sec">
+      <div class="sec-label">Antes de começar</div>
+      <div class="callout green">
+        <div class="callout-icon">✅</div>
+        <div>
+          <div class="callout-title">Anote só as séries válidas</div>
+          <div class="callout-text">Feitas com <strong>foco, esforço e boa execução</strong>. São essas que geram resultado.</div>
+        </div>
+      </div>
+      <div class="callout gray">
+        <div class="callout-icon">🌡️</div>
+        <div>
+          <div class="callout-title">Aquecimento — não precisa anotar</div>
+          <div class="callout-text">Faça quantas séries precisar até sentir <strong>segurança e controle</strong>. Não tem número fixo.</div>
+        </div>
+      </div>
+
+      <div class="wu-toggle" onclick="toggleWU()">
+        <div class="wu-toggle-label">📋 Registrar aquecimento <span class="wu-badge">opcional</span></div>
+        <span class="wu-arrow" id="wu-arrow">▼</span>
+      </div>
+      <div class="wu-body" id="wu-body">
+        <div class="wu-card">
+          <div class="wu-header"><span>Preparação — não conta como série válida</span><strong>⚠ não anote aqui as válidas</strong></div>
+          <div id="wu-rows"></div>
+          <button class="add-wu" onclick="addWU()">+ série de preparação</button>
+        </div>
+        <div class="callout yellow" style="margin-bottom:0">
+          <div class="callout-icon">⚠️</div>
+          <div><div class="callout-text">Use carga menor e <strong style="color:var(--yellow)">não chegue perto da falha</strong>. Preparar, não cansar.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec" style="padding:0">
+      <div style="padding:16px 16px 8px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray)">Séries válidas</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:0 16px">
+        <div class="ex-list-head">
+          <span>Exercício</span>
+          <span class="ant-h">Anterior</span>
+          <span>Atual kg</span>
+          <span></span>
+        </div>
+        <div id="ex-list"></div>
+        <button class="add-ex-row" onclick="addEx()">+ adicionar exercício</button>
+      </div>
+      <div style="height:16px"></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-label">Como foi o treino?</div>
+      <div class="feel-row" id="feel-row">
+        <button class="feel-btn" onclick="setFeel(0)"><span class="ico">😴</span><span class="lbl">Fraco</span></button>
+        <button class="feel-btn" onclick="setFeel(1)"><span class="ico">😐</span><span class="lbl">Regular</span></button>
+        <button class="feel-btn" onclick="setFeel(2)"><span class="ico">🙂</span><span class="lbl">Bom</span></button>
+        <button class="feel-btn" onclick="setFeel(3)"><span class="ico">😤</span><span class="lbl">Ótimo</span></button>
+        <button class="feel-btn" onclick="setFeel(4)"><span class="ico">🔥</span><span class="lbl">Top</span></button>
+      </div>
+      <label class="field-label">Anotações</label>
+      <textarea class="textarea" id="notes" rows="3" placeholder="Dores, ajustes, observações..."></textarea>
+      <label class="field-label">Meta pro próximo treino</label>
+      <input class="text-input" id="goal" placeholder="Ex: aumentar leg press para 190kg..."/>
+    </div>
+
+    <div class="save-bar">
+      <button class="save-btn" onclick="saveSession()">Salvar treino</button>
+      <button class="clear-btn" onclick="clearForm()">Limpar</button>
+      <span class="toast" id="toast">Salvo ✓</span>
+    </div>
+  </div>
+
+  <!-- HISTÓRICO -->
+  <div id="pane-historico" class="pane">
+    <div class="sec" style="border:none">
+      <div class="sec-label">Treinos salvos</div>
+      <div id="hist-list"></div>
+    </div>
+    <footer class="footer"><a href="https://www.instagram.com/treinador.lucasgonda/" target="_blank">@treinador.lucasgonda</a></footer>
+  </div>
+
+  <!-- PROGRESSO -->
+  <div id="pane-progresso" class="pane">
+    <div class="sec" style="border:none">
+      <div class="sec-label">Visão geral</div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-val" id="p-total">0</div><div class="stat-lbl">Treinos</div></div>
+        <div class="stat-card"><div class="stat-val" id="p-sem">0</div><div class="stat-lbl">Semanas</div></div>
+        <div class="stat-card"><div class="stat-val" id="p-str">0</div><div class="stat-lbl">Sequência</div></div>
+      </div>
+      <div class="callout gray" style="margin-bottom:16px">
+        <div class="callout-icon">📊</div>
+        <div>
+          <div class="callout-title">Como comparar corretamente</div>
+          <div class="callout-text">Compare sempre <strong>1ª série com 1ª</strong>, 2ª com 2ª. A fadiga acumula ao longo do treino.</div>
+        </div>
+      </div>
+      <div class="sec-label" style="margin-bottom:12px">Evolução por exercício</div>
+      <div id="trend-list"></div>
+    </div>
+    <footer class="footer"><a href="https://www.instagram.com/treinador.lucasgonda/" target="_blank">@treinador.lucasgonda</a></footer>
+  </div>
+
+  <!-- MÉTODO -->
+  <div id="pane-metodo" class="pane">
+    <div class="m-sec">
+      <div class="m-title">O que é uma série válida?</div>
+      <div class="m-text">Feita com foco, esforço, concentração e boa execução — tentando entregar o seu melhor. São essas que geram evolução.</div>
+      <div class="m-text">Anote <strong style="color:var(--green)">somente</strong> as séries válidas nesta ficha.</div>
+    </div>
+
+    <div class="m-sec">
+      <div class="m-title">Aquecimento não é protocolo fixo</div>
+      <div class="m-text">Pode ser 1 série num dia bom. 3 ou 4 num dia travado. Faça quantas precisar até sentir:</div>
+      <div class="m-check">
+        <div class="m-check-item"><span class="iy">✓</span>Segurança no movimento</div>
+        <div class="m-check-item"><span class="iy">✓</span>Controle e estabilidade</div>
+        <div class="m-check-item"><span class="iy">✓</span>Confiança na carga do dia</div>
+      </div>
+      <div class="m-text">O objetivo é preparar — não cansar. Sem falha, carga menor.</div>
+    </div>
+
+    <div class="m-sec">
+      <div class="m-title">Exemplo — Leg Press 3×8–12</div>
+      <div class="m-ex">
+        <div class="m-ex-label">Aquecimento (não anote)</div>
+        <div class="m-ex-row"><span>80 kg × 15</span><span class="tag tag-prep">preparação</span></div>
+        <div class="m-ex-row"><span>120 kg × 10</span><span class="tag tag-prep">preparação</span></div>
+      </div>
+      <div class="m-ex" style="margin-top:10px">
+        <div class="m-ex-label">Séries válidas (anote aqui)</div>
+        <div class="m-ex-row"><span>180 kg × 11</span><span class="tag tag-now">✓ válida</span></div>
+        <div class="m-ex-row"><span>180 kg × 10</span><span class="tag tag-now">✓ válida</span></div>
+        <div class="m-ex-row"><span>170 kg × 10</span><span class="tag tag-now">✓ válida</span></div>
+      </div>
+    </div>
+
+    <div class="m-sec">
+      <div class="m-title">Como comparar a evolução</div>
+      <div class="m-check">
+        <div class="m-check-item"><span class="iy">✓</span>1ª série com 1ª série</div>
+        <div class="m-check-item"><span class="iy">✓</span>2ª série com 2ª série</div>
+        <div class="m-check-item"><span class="in">✗</span>Não compare séries diferentes entre treinos</div>
+        <div class="m-check-item"><span class="in">✗</span>Não compare aquecimento com série válida</div>
+      </div>
+      <div class="m-ex" style="margin-top:12px">
+        <div class="m-ex-label">Comparação correta — 1ª com 1ª</div>
+        <div class="m-ex-row"><span>Anterior — 1ª série</span><span class="tag tag-ant">100 kg × 12</span></div>
+        <div class="m-ex-row"><span>Atual — 1ª série</span><span class="tag tag-now">105 kg × 11</span></div>
+      </div>
+    </div>
+
+    <div class="m-sec">
+      <div class="m-title">A carga varia de dia pra dia</div>
+      <div class="m-text">Sono, alimentação, estresse e recuperação influenciam diretamente. Isso é normal. O foco não é bater números.</div>
+      <div class="m-check" style="margin-top:10px">
+        <div class="m-check-item"><span class="iy">✓</span>Boa execução</div>
+        <div class="m-check-item"><span class="iy">✓</span>Intensidade</div>
+        <div class="m-check-item"><span class="iy">✓</span>Constância</div>
+        <div class="m-check-item"><span class="iy">✓</span>Evolução ao longo do tempo</div>
+      </div>
+    </div>
+
+    <div class="m-sec" style="border:none">
+      <div class="callout green">
+        <div class="callout-icon">💡</div>
+        <div>
+          <div class="callout-title">Resumo do Método LG</div>
+          <div class="callout-text"><strong>Consistência + intensidade + progressão = resultado.</strong></div>
+        </div>
+      </div>
+    </div>
+    <footer class="footer"><a href="https://www.instagram.com/treinador.lucasgonda/" target="_blank">@treinador.lucasgonda</a></footer>
+  </div>
+
+</div>
+<script>
+const KEY='lg_v4';
+let exs=[],wuRows=[],feelIdx=-1;
+
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return[]}}
+function persist(d){localStorage.setItem(KEY,JSON.stringify(d))}
+
+function showTab(name){
+  const ns=['registro','historico','progresso','metodo'];
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',ns[i]===name));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pane-'+name).classList.add('on');
+  if(name==='historico')renderHist();
+  if(name==='progresso')renderProg();
+}
+
+let wuOpen=false;
+function toggleWU(){
+  wuOpen=!wuOpen;
+  document.getElementById('wu-body').classList.toggle('open',wuOpen);
+  document.getElementById('wu-arrow').classList.toggle('open',wuOpen);
+}
+function addWU(d){wuRows.push(d||{kg:'',reps:''});renderWU()}
+function rmWU(i){wuRows.splice(i,1);renderWU()}
+function setWU(i,f,v){wuRows[i][f]=v}
+function renderWU(){
+  document.getElementById('wu-rows').innerHTML=wuRows.map((r,i)=>`
+    <div class="wu-row">
+      <span class="wu-num">${i+1}</span>
+      <input type="number" placeholder="kg" value="${r.kg}" oninput="setWU(${i},'kg',this.value)" inputmode="decimal"/>
+      <input type="number" placeholder="reps" value="${r.reps}" oninput="setWU(${i},'reps',this.value)" inputmode="numeric"/>
+      <button class="wu-del" onclick="rmWU(${i})">×</button>
+    </div>`).join('')
+}
+
+function setFeel(i){
+  feelIdx=i;
+  document.querySelectorAll('#feel-row .feel-btn').forEach((b,j)=>b.classList.toggle('on',i===j));
+}
+
+function addEx(d){
+  exs.push(d||{name:'',ca:'',c:''});
+  renderEx();
+}
+function rmEx(i){exs.splice(i,1);renderEx()}
+
+function saveSession(){
+  const sessions=load();
+  sessions.unshift({
+    id:Date.now(),
+    aluno:document.getElementById('m-aluno').value.trim(),
+    treino:document.getElementById('m-treino').value.trim(),
+    data:document.getElementById('m-data').value||today(),
+    semana:document.getElementById('m-semana').value.trim(),
+    feel:feelIdx,
+    notes:document.getElementById('notes').value.trim(),
+    goal:document.getElementById('goal').value.trim(),
+    warmup:JSON.parse(JSON.stringify(wuRows)),
+    exercises:JSON.parse(JSON.stringify(exs)),
+  });
+  persist(sessions);
+  const t=document.getElementById('toast');
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);
+  // carry forward
+  exs.forEach(ex=>{ex.ca=ex.c||ex.ca||'';ex.c=''});
+  renderEx();
+}
+
+function clearForm(){
+  if(!confirm('Limpar tudo?'))return;
+  exs=[];wuRows=[];feelIdx=-1;
+  document.querySelectorAll('#feel-row .feel-btn').forEach(b=>b.classList.remove('on'));
+  ['notes','goal','m-treino','m-semana'].forEach(id=>document.getElementById(id).value='');
+  renderWU();
+  addEx();addEx();addEx();
+}
+
+function renderHist(){
+  const sessions=load();
+  const el=document.getElementById('hist-list');
+  if(!sessions.length){el.innerHTML='<div class="empty">Nenhum treino salvo ainda.<br>Registre seu primeiro treino.</div>';return}
+  const feels=['😴 Fraco','😐 Regular','🙂 Bom','😤 Ótimo','🔥 Top'];
+  el.innerHTML=sessions.map(s=>{
+    const exRows=s.exercises.filter(e=>e.name).map(ex=>{
+      const sets=ex.series.filter(sr=>sr.c||sr.r).map((sr,i)=>`${i+1}ª: ${sr.c||'—'}kg × ${sr.r||'—'}`).join(' | ');
+      return`<div class="hist-ex"><span class="hist-name">${esc(ex.name)}</span><span class="hist-sets">${sets||'—'}</span></div>`;
+    }).join('');
+    const meta=[s.aluno,s.semana?'Sem.'+s.semana:'',s.feel>=0?feels[s.feel]:''].filter(Boolean).join(' · ');
+    return`<div class="hist-card">
+      <div class="hist-head">
+        <div>
+          <div class="hist-title">${s.treino?'Treino '+esc(s.treino)+' — ':''}${fmtDate(s.data)}</div>
+          ${meta?`<div class="hist-meta">${meta}</div>`:''}
+        </div>
+        <button class="del-btn" onclick="delSession(${s.id})">×</button>
+      </div>
+      <div class="hist-body">
+        ${exRows||'<span style="color:var(--muted);font-size:13px">Sem exercícios</span>'}
+        ${s.notes?`<div class="hist-note">${esc(s.notes)}</div>`:''}
+        ${s.goal?`<div class="hist-goal">Meta: ${esc(s.goal)}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function delSession(id){
+  if(!confirm('Apagar este treino?'))return;
+  persist(load().filter(s=>s.id!==id));renderHist();
+}
+
+function renderProg(){
+  const sessions=load();
+  document.getElementById('p-total').textContent=sessions.length;
+  const weeks=new Set(sessions.map(s=>s.semana).filter(Boolean));
+  document.getElementById('p-sem').textContent=weeks.size||Math.min(sessions.length,99);
+  const dates=[...new Set(sessions.map(s=>s.data).filter(Boolean))].sort().reverse();
+  let str=0;const now=new Date();
+  for(let i=0;i<dates.length;i++){if((now-new Date(dates[i]))/86400000<=(i+1)*7+3)str++;else break}
+  document.getElementById('p-str').textContent=str;
+
+  const exMap={};
+  [...sessions].reverse().forEach(s=>s.exercises.forEach(ex=>{
+    if(!ex.name)return;
+    const valid=ex.series.filter(sr=>sr.c);
+    if(!valid.length)return;
+    const max=Math.max(...valid.map(sr=>parseFloat(sr.c)||0));
+    if(!exMap[ex.name])exMap[ex.name]=[];
+    exMap[ex.name].push(max);
+  }));
+  const entries=Object.entries(exMap).filter(([,a])=>a.length>=2);
+  const el=document.getElementById('trend-list');
+  if(!entries.length){el.innerHTML='<div class="empty">Salve ao menos 2 treinos com os mesmos exercícios para ver a evolução.</div>';return}
+  el.innerHTML=entries.map(([name,arr])=>{
+    const first=arr[0],last=arr[arr.length-1],diff=last-first;
+    const cls=diff>0?'up':diff<0?'dn':'same',arrow=diff>0?'↑':diff<0?'↓':'→',sign=diff>0?'+':'';
+    return`<div class="trend-row"><span class="trend-name">${esc(name)}</span><span class="trend-val ${cls}">${arrow} ${sign}${diff}kg <span style="color:var(--gray);font-weight:400">(${first}→${last}kg)</span></span></div>`;
+  }).join('');
+}
+
+function today(){return new Date().toISOString().split('T')[0]}
+function fmtDate(d){if(!d)return'';const[y,m,day]=d.split('-');return`${day}/${m}/${y}`}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+// init
+document.getElementById('m-data').value=today();
+const last=load()[0];
+if(last){
+  if(last.aluno)document.getElementById('m-aluno').value=last.aluno;
+  if(last.exercises&&last.exercises.length){
+    last.exercises.forEach(ex=>addEx({name:ex.name,ca:ex.c||ex.ca||'',c:''}));
+  }else{addEx();addEx();addEx()}
+}else{addEx();addEx();addEx()}
+renderEx();
+
+function setEF(i,f,v){exs[i][f]=v}
+function setName(i,v){exs[i].name=v}
+
+function renderEx(){
+  document.getElementById('ex-list').innerHTML=exs.map((ex,ei)=>`
+    <div class="ex-row">
+      <input class="ex-row-name" placeholder="Nome do exercício..." value="${esc(ex.name)}" oninput="setName(${ei},this.value)"/>
+      <input class="ant-inp" type="number" inputmode="decimal" placeholder="—" value="${ex.ca||''}" oninput="setEF(${ei},'ca',this.value)"/>
+      <input type="number" inputmode="decimal" placeholder="kg" value="${ex.c||''}" oninput="setEF(${ei},'c',this.value)"/>
+      <button class="ex-row-rm" onclick="rmEx(${ei})">×</button>
+    </div>`).join('')
+}
+</script>
+</body>
+</html>
